@@ -122,3 +122,9 @@ body {
 .button__home {
     margin: 1rem;
 }
+
+.button--github {
+  background: url('./assets/GitHub-Mark-32px.png') no-repeat;
+  background-position: left;
+  padding-left: 40px;
+}

@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "env2": "^2.1.1",
+    "fs": "0.0.1-security",
     "handlebars": "^4.0.6",
     "hapi": "^16.1.1",
     "hapi-auth-cookie": "^7.0.0",
