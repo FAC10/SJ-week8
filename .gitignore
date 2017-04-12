@@ -39,3 +39,6 @@ jspm_packages
 # Config.env
 config.env
 config-test.env
+
+# DS Store
+.DS_store
