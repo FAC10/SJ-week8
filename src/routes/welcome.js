@@ -1,6 +1,8 @@
 const request = require('request');
 const querystring = require('querystring');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('./../helpers/bcrypt.js');
+const postData = require('./../database/postdata.js');
 
 module.exports = {
   method: 'GET',
@@ -60,17 +62,33 @@ module.exports = {
           access_token,
         };
 
+        const config = {
+          ttl: 24*60*60*1000,
+          path: '/',
+          isSecure: process.env.NODE_ENV === 'PRODUCTION'
+        }
+
         const secret = process.env.JWT_SECRET;
 
-        jwt.sign(payload, secret, options, (error, jwtToken) => {
-          if (error) {
-            console.log(error);
-            return;
-          }
-          console.log(jwtToken);
+
+
+        postData.insertGithubUser(parsedBody.login, parsedBody.avatar_url, parsedBody.id,  access_token, (err, res)=>{
+              if (err) {
+                console.log(err);
+                return;
+              };
+
+              jwt.sign(payload, secret, options, (error, jwtToken) => {
+                if (error) {
+                  console.log(error);
+                  return;
+                }
+                reply.redirect('/').state('token', jwtToken, config);
+              });
+          });
         });
 
-      });
+
 
     })
   },

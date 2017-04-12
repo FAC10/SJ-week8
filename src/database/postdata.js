@@ -22,4 +22,13 @@ postData.insertIntoDatabase = (reqPayload, credentials, callback) => {
 
 };
 
+postData.insertGithubUser = (username, avatar_url, githubId, accessToken, cb) => {
+  db_connection.query(`INSERT INTO users (username, avatar_url, githubId, access_token) VALUES ('${username}', '${avatar_url}', ${githubId}, '${accessToken}')`, (err, res) => {
+    if (err) return cb(err);
+    cb(null, res.rows);
+  });
+};
+
+
+
 module.exports = postData;

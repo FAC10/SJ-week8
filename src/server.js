@@ -6,8 +6,10 @@ const inert = require('inert');
 const handlebars = require('handlebars');
 const data = require('./database/getdata.js');
 const CookieAuth = require('hapi-auth-cookie');
+const jwt2 = require('hapi-auth-jwt2');
 const credentials = require('hapi-context-credentials');
 const postData = require('./database/postdata.js');
+const validate = require('./helpers/validate.js');
 require('env2')('./config.env');
 const server = new hapi.Server();
 // let cache;
@@ -22,7 +24,7 @@ server.connection({
   },
 });
 
-server.register([inert, credentials, vision, CookieAuth], (err) => {
+server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   if (err) throw err;
 
   server.views({
@@ -162,14 +164,25 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
 
 // Authentication
 
-const options = {
-  password: 'datagangrulesokdatagangrulesokdatagangrulesok',
-  cookie: 'pajescookie',
-  isSecure: false,
-  ttl: 3 * 60 * 10000,
+// const options = {
+//   password: 'datagangrulesokdatagangrulesokdatagangrulesok',
+//   cookie: 'pajescookie',
+//   isSecure: false,
+//   ttl: 3 * 60 * 10000,
+// };
+//
+// server.auth.strategy('base', 'cookie', 'optional', options);
+
+
+
+const jwt_strategy_options = {
+  key: process.env.JWT_SECRET,
+  validateFunc: validate,
+  verifyOptions: { algorithms: ['HS256'] },
 };
 
-server.auth.strategy('base', 'cookie', 'optional', options);
+
+server.auth.strategy('jwt', 'jwt', jwt_strategy_options);
 
 // Start server
 
