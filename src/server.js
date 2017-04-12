@@ -6,8 +6,10 @@ const inert = require('inert');
 const handlebars = require('handlebars');
 const data = require('./database/getdata.js');
 const CookieAuth = require('hapi-auth-cookie');
+const jwt2 = require('hapi-auth-jwt2');
 const credentials = require('hapi-context-credentials');
 const postData = require('./database/postdata.js');
+const validate = require('./helpers/validate.js');
 require('env2')('./config.env');
 const server = new hapi.Server();
 // let cache;
@@ -22,7 +24,7 @@ server.connection({
   },
 });
 
-server.register([inert, credentials, vision, CookieAuth], (err) => {
+server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   if (err) throw err;
 
   server.views({
@@ -88,6 +90,8 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
 
   });
 
+  server.route(require('./routes/welcome.js'));
+
   server.route({
     method: 'GET',
     path:'/my-posts',
@@ -136,12 +140,11 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
     handler: (request, reply) => {
       const params = {
         client_id: process.env.CLIENT_ID,
-        redirect_url: process.env.BASE_URL + '/welcome',
+        redirect_uri: process.env.BASE_URL + '/welcome',
       };
 
       const base = 'https://github.com/login/oauth/authorize?';
       const query = querystring.stringify(params);
-      console.log(query);
       return reply.redirect(base + query);
     },
   });
@@ -170,6 +173,7 @@ const options = {
 
 server.auth.strategy('base', 'cookie', 'optional', options);
 
+
 // Start server
 
 server.start((err) => {
@@ -177,4 +181,4 @@ server.start((err) => {
   console.log(`Server is running on ${server.info.uri}`);
 });
 
-module.exports=server;
+module.exports = server;

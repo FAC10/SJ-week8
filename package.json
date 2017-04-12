@@ -31,14 +31,18 @@
     "tape": "^4.6.3"
   },
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "env2": "^2.1.1",
     "fs": "0.0.1-security",
     "handlebars": "^4.0.6",
     "hapi": "^16.1.1",
     "hapi-auth-cookie": "^7.0.0",
+    "hapi-auth-jwt2": "^7.2.4",
     "hapi-context-credentials": "^2.0.0",
     "inert": "^4.2.0",
+    "jsonwebtoken": "^7.3.0",
     "pg": "^6.1.5",
+    "request": "^2.81.0",
     "vision": "^4.1.1"
   }
 }
