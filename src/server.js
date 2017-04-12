@@ -1,4 +1,6 @@
 const hapi = require('hapi');
+const fs = require('fs');
+const querystring = require('querystring');
 const vision = require('vision');
 const inert = require('inert');
 const handlebars = require('handlebars');
@@ -6,7 +8,7 @@ const data = require('./database/getdata.js');
 const CookieAuth = require('hapi-auth-cookie');
 const credentials = require('hapi-context-credentials');
 const postData = require('./database/postdata.js');
-
+require('env2')('./config.env');
 const server = new hapi.Server();
 // let cache;
 
@@ -14,6 +16,10 @@ const port = process.env.PORT || 3005;
 
 server.connection({
   port,
+  tls: {
+    key: fs.readFileSync('./keys/key.pem'),
+    cert: fs.readFileSync('./keys/cert.pem'),
+  },
 });
 
 server.register([inert, credentials, vision, CookieAuth], (err) => {
@@ -121,6 +127,22 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
         }
         reply(res).redirect('/');
       });
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/githubLogin',
+    handler: (request, reply) => {
+      const params = {
+        client_id: process.env.CLIENT_ID,
+        redirect_url: process.env.BASE_URL + '/welcome',
+      };
+
+      const base = 'https://github.com/login/oauth/authorize?';
+      const query = querystring.stringify(params);
+      console.log(query);
+      return reply.redirect(base + query);
     },
   });
 
