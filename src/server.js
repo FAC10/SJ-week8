@@ -88,6 +88,8 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
 
   });
 
+  server.route(require('./routes/welcome.js'));
+
   server.route({
     method: 'GET',
     path:'/my-posts',
@@ -136,12 +138,11 @@ server.register([inert, credentials, vision, CookieAuth], (err) => {
     handler: (request, reply) => {
       const params = {
         client_id: process.env.CLIENT_ID,
-        redirect_url: process.env.BASE_URL + '/welcome',
+        redirect_uri: process.env.BASE_URL + '/welcome',
       };
 
       const base = 'https://github.com/login/oauth/authorize?';
       const query = querystring.stringify(params);
-      console.log(query);
       return reply.redirect(base + query);
     },
   });
