@@ -22,11 +22,23 @@ postData.insertIntoDatabase = (reqPayload, credentials, callback) => {
 
 };
 
-postData.insertGithubUser = (username, avatar_url, githubId, accessToken, cb) => {
-  db_connection.query(`INSERT INTO users (username, avatar_url, githubId, access_token) VALUES ('${username}', '${avatar_url}', ${githubId}, '${accessToken}')`, (err, res) => {
-    if (err) return cb(err);
-    cb(null, res.rows);
-  });
+postData.insertGithubUser = (username, avatar_url, githubId, cb) => {
+    db_connection.query(`SELECT * FROM users WHERE username = '${username}' AND avatar_url = '${avatar_url}' AND githubId = '${githubId}'`, (err, res) => {
+      console.log(res.rows.length);
+      if (err){
+        return cb(err);
+      } else if (res.rows.length === 0) {
+        console.log('logginggggg');
+          db_connection.query(`INSERT INTO users (username, avatar_url, githubId) VALUES ('${username}', '${avatar_url}', '${githubId}')`, (err, res) => {
+            if (err) return cb(err);
+            cb(null, res.rows);
+          });
+      } else if (res.rows.length === 1) {
+          return cb(null, res.rows);
+      }
+    });
+
+
 };
 
 

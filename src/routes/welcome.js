@@ -1,7 +1,5 @@
 const request = require('request');
 const querystring = require('querystring');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('./../helpers/bcrypt.js');
 const postData = require('./../database/postdata.js');
 
 module.exports = {
@@ -48,48 +46,19 @@ module.exports = {
 
         const parsedBody = JSON.parse(body);
 
-        let options = {
-          expiresIn: Date.now() + 24 * 60 * 60 * 1000,
-          subject: 'github-data'
-        };
-
-        let payload = {
-          user: {
-            username: parsedBody.login,
-            avatar: parsedBody.avatar_url,
-            id: parsedBody.id
-          },
-          access_token,
-        };
-
-        const config = {
-          ttl: 24*60*60*1000,
-          path: '/',
-          isSecure: process.env.NODE_ENV === 'PRODUCTION'
-        }
-
-        const secret = process.env.JWT_SECRET;
-
-
-
-        postData.insertGithubUser(parsedBody.login, parsedBody.avatar_url, parsedBody.id,  access_token, (err, res)=>{
-              if (err) {
-                console.log(err);
-                return;
-              };
-
-              jwt.sign(payload, secret, options, (error, jwtToken) => {
-                if (error) {
-                  console.log(error);
-                  return;
-                }
-                reply.redirect('/').state('token', jwtToken, config);
-              });
-          });
-        });
-
-
-
+      postData.insertGithubUser(parsedBody.login, parsedBody.avatar_url, parsedBody.id, (err, res)=>{
+            if (err) {
+              console.log(err);
+              return;
+            };
+            req.cookieAuth.set({
+              access_token,
+              username: parsedBody.login,
+              avatar_url: parsedBody.avatar_url,
+             });
+            reply({ credentials: req.auth.credentials }).redirect('/');
+      });
+      });
     })
   },
 };

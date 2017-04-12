@@ -164,25 +164,15 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
 
 // Authentication
 
-// const options = {
-//   password: 'datagangrulesokdatagangrulesokdatagangrulesok',
-//   cookie: 'pajescookie',
-//   isSecure: false,
-//   ttl: 3 * 60 * 10000,
-// };
-//
-// server.auth.strategy('base', 'cookie', 'optional', options);
-
-
-
-const jwt_strategy_options = {
-  key: process.env.JWT_SECRET,
-  validateFunc: validate,
-  verifyOptions: { algorithms: ['HS256'] },
+const options = {
+  password: 'datagangrulesokdatagangrulesokdatagangrulesok',
+  cookie: 'pajescookie',
+  isSecure: false,
+  ttl: 3 * 60 * 10000,
 };
 
+server.auth.strategy('base', 'cookie', 'optional', options);
 
-server.auth.strategy('jwt', 'jwt', jwt_strategy_options);
 
 // Start server
 
@@ -191,4 +181,4 @@ server.start((err) => {
   console.log(`Server is running on ${server.info.uri}`);
 });
 
-module.exports=server;
+module.exports = server;
