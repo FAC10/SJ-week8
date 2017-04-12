@@ -8,12 +8,7 @@ test('Passing test for travis', (t) => {
   t.end();
 });
 
-test('database functions', (t) => {
-  data.getBlogPosts((err, res)=>{
-    t.ok(res.length>1);
-  });
-  t.end();
-});
+
 
 test('Check home route', (t)=>{
   var options = {
@@ -34,32 +29,32 @@ test('Check home route', (t)=>{
 //     url: '/my-posts'
 //   };
 //   server.inject(options, (res)=>{
-//     t.equal(res.statusCode, 200, 'Should return statuscode of 200');
+//     t.equal(res.statusCode, 500, 'Should return statuscode of 500');
 //     t.end();
 //   });
 // });
 
-// test('Check  /submit-post', (t)=>{
-//   var options = {
-//     method: 'POST',
-//     url: '/submit-post'
-//   }
-//   server.inject(options, (res)=>{
-//     t.equal(res.statusCode, 200, 'Should return statuscode of 200');
-//     t.end();
-//   });
-// });
+test('Check  /submit-post', (t)=>{
+  var options = {
+    method: 'POST',
+    url: '/submit-post'
+  }
+  server.inject(options, (res)=>{
+    t.equal(res.statusCode, 200, 'Should return statuscode of 200');
+    t.end();
+  });
+});
 
-// test('Check  /logged-in', (t)=>{
-//   var options = {
-//     method: 'POST',
-//     url: '/logged-in'
-//   }
-//   server.inject(options, (res)=>{
-//     t.equal(res.statusCode, 200, 'Should return statuscode of 200');
-//     t.end();
-//   });
-// });
+test('Check  /logged-in', (t)=>{
+  var options = {
+    method: 'POST',
+    url: '/logged-in'
+  }
+  server.inject(options, (res)=>{
+    t.equal(res.statusCode, 200, 'Should return statuscode of 200');
+    t.end();
+  });
+});
 
 test('Check  /write-post', (t)=>{
   var options = {
