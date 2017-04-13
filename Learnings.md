@@ -32,3 +32,22 @@ Testing your databases
 - Inside your package.json, add a script called ```"test-database":"ENV=test node database/db_build.js"```
 - Create a database called ```test_database``` in your ```psql```
 - Your db_url will look like ```[name]:localhost:[port]/[name of database]
+
+
+### hapi 404
+If a file isn't found by the directory handler, it will respond with a 404 error by default.
+
+What you can do is intercept this with an onPreReponse handler, which checks if the response is an error response (a Boom object), and if so respond however you wish.
+
+```
+server.ext('onPreResponse', function (request, reply) {
+
+    if (request.response.isBoom) {
+        // Inspect the response here, perhaps see if it's a 404?
+        return reply.redirect('/');
+    }
+
+    return reply.continue();
+});
+
+```

@@ -4,9 +4,7 @@ const vision = require('vision');
 const inert = require('inert');
 const handlebars = require('handlebars');
 const CookieAuth = require('hapi-auth-cookie');
-const jwt2 = require('hapi-auth-jwt2');
 const credentials = require('hapi-context-credentials');
-const validate = require('./helpers/validate.js');
 // require('env2')('./config.env');
 const server = new hapi.Server();
 // let cache;
@@ -23,7 +21,7 @@ server.connection({
   },
 });
 
-server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
+server.register([inert, credentials, vision, CookieAuth], (err) => {
   if (err) throw err;
 
   server.views({
