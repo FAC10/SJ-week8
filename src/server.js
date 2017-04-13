@@ -38,6 +38,13 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route(routes);
 });
 
+server.ext('onPreResponse', (request, reply) => {
+  if (request.response.isBoom && request.response.output.statusCode === 404) {
+    return reply.view('notFound');
+  }
+  return reply.continue();
+});
+
 // Authentication
 
 const options = {
