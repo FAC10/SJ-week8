@@ -40,6 +40,11 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route({
     method: 'GET',
     path: '/',
+    config: {
+      auth: {
+        mode: 'optional'
+      },
+    },
     handler: (request, reply) => {
       data.getBlogPosts((dbErr, res) => {
         if (dbErr) {
@@ -139,6 +144,9 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route({
     method: 'GET',
     path: '/githubLogin',
+    config: {
+      auth: false
+    },
     handler: (request, reply) => {
       const params = {
         client_id: process.env.CLIENT_ID,
@@ -155,6 +163,9 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route({
     method: 'GET',
     path: '/{file*}',
+    config: {
+      auth: false
+    },
     handler: {
       directory: {
         path: './public',
@@ -173,7 +184,9 @@ const options = {
   ttl: 3 * 60 * 10000,
 };
 
-server.auth.strategy('base', 'cookie', 'optional', options);
+server.auth.strategy('base', 'cookie', options);
+
+server.auth.default('base');
 
 
 // Start server

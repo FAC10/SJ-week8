@@ -5,6 +5,9 @@ const postData = require('./../database/postdata.js');
 module.exports = {
   method: 'GET',
   path: '/welcome',
+  config: {
+    auth: false
+  },
   handler: (req, reply) => {
     const { code } = req.query;
     const url = 'https://github.com/login/oauth/access_token?';
