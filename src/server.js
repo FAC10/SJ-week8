@@ -41,7 +41,6 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
     method: 'GET',
     path: '/',
     handler: (request, reply) => {
-      console.log(request.auth)
       data.getBlogPosts((dbErr, res) => {
         if (dbErr) {
           reply.view('Lo sentimos, actualmente estamos experimentando dificultades con el servidor');
