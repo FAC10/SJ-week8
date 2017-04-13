@@ -1,18 +1,17 @@
 const hapi = require('hapi');
 const fs = require('fs');
-const querystring = require('querystring');
 const vision = require('vision');
 const inert = require('inert');
 const handlebars = require('handlebars');
-const data = require('./database/getdata.js');
 const CookieAuth = require('hapi-auth-cookie');
 const jwt2 = require('hapi-auth-jwt2');
 const credentials = require('hapi-context-credentials');
-const postData = require('./database/postdata.js');
 const validate = require('./helpers/validate.js');
-require('env2')('./config.env');
+// require('env2')('./config.env');
 const server = new hapi.Server();
 // let cache;
+const routes = require('./routes');
+
 
 const port = process.env.PORT || 3005;
 
@@ -36,153 +35,7 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
     // helpersPath: 'views/helpers',
   });
 
-  // Template routes
-  server.route({
-    method: 'GET',
-    path: '/',
-    config: {
-      auth: {
-        mode: 'try'
-    }
-  },
-    handler: (request, reply) => {
-      data.getBlogPosts((dbErr, res) => {
-        if (dbErr) {
-          reply.view('Lo sentimos, actualmente estamos experimentando dificultades con el servidor');
-          return;
-        }
-        // cache = res;
-        reply.view('index', { res });
-      });
-    },
-  });
-
-
-  server.route({
-    method: 'GET',
-    path: '/write-post',
-    handler: {
-      view: 'write-post',
-    },
-  });
-
-  server.route({
-    method: 'POST',
-    path: '/logged-in',
-    config: {
-      auth: {
-        mode: 'try'
-    }
-  },
-    handler: (req, reply) => {
-
-      const { username, password } = req.payload;
-      data.getUsers(username, password, (err, res) => {
-
-        if (err) {
-          //TODO res: cache, can be passed in but makes the above function run since
-          //its our only means of validation
-          reply.view('index', { message: err.message });
-        }
-        else if (res.length) {
-          data.getBlogPosts((dbError, allTheBlogsPosts) => {
-
-            if (dbError) {
-              reply.view('index', { message: 'Lo sentimos, actualmente estamos experimentando dificultades con el servidor'});
-            }
-            req.cookieAuth.set({ username });
-            reply({ res: allTheBlogsPosts }).redirect('/');
-
-          });
-        }
-      });
-    },
-
-  });
-
-  server.route(require('./routes/welcome.js'));
-
-  server.route({
-    method: 'GET',
-    path:'/my-posts',
-    handler:(req, reply)=>{
-      if (req.auth.credentials.username){
-      data.getBlogPostsByUser(req.auth.credentials.username, (dbErr, res) => {
-        if (dbErr) {
-          reply.view(index, { message: 'Lo sentimos, actualmente estamos experimentando dificultades con el servidor'});
-          return;
-        }
-        reply.view('index', { res });
-      });
-    }
-    },
-  });
-
-  server.route({
-    method: 'POST',
-    path: '/logged-out',
-    config: {
-      auth: {
-        mode: 'try'
-    }
-  },
-    handler: (request, reply) => {
-      request.cookieAuth.clear();
-      reply.redirect('/');
-    },
-  });
-
-  server.route({
-    method: 'POST',
-    path: '/submit-post',
-    handler: (request, reply) => {
-      postData.insertIntoDatabase(request.payload, request.auth.credentials, (dbError, res) => {
-        if (dbError) {
-          //  TODO Figure out how to send message with redirect
-          // return reply({
-          //   message: 'Ayúdame, oh Dios mío, ¿por qué?'
-          // }).redirect('write-post');
-          return reply.view('write-post', {
-            message: 'Ayúdame, oh Dios mío, ¿por qué?',
-          });
-        }
-        reply(res).redirect('/');
-      });
-    },
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/githubLogin',
-    config: {
-      auth: false
-    },
-    handler: (request, reply) => {
-      const params = {
-        client_id: process.env.CLIENT_ID,
-        redirect_uri: process.env.BASE_URL + '/welcome',
-      };
-
-      const base = 'https://github.com/login/oauth/authorize?';
-      const query = querystring.stringify(params);
-      return reply.redirect(base + query);
-    },
-  });
-
-  // Static routes
-  server.route({
-    method: 'GET',
-    path: '/{file*}',
-    config: {
-      auth: false
-    },
-    handler: {
-      directory: {
-        path: './public',
-      },
-    },
-
-  });
+  server.route(routes);
 });
 
 // Authentication
@@ -201,12 +54,5 @@ server.auth.strategy('base', 'cookie', 'required', options);
 
 // server.auth.default('base');
 
-
-// Start server
-
-server.start((err) => {
-  if (err) throw err;
-  console.log(`Server is running on ${server.info.uri}`);
-});
 
 module.exports = server;

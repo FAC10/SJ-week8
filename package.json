@@ -4,8 +4,8 @@
   "description": "A sick blog platform for Spanish people",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js -e 'js, html, css, hbs'",
+    "start": "node src/start.js",
+    "dev": "nodemon src/start.js -e 'js, html, css, hbs'",
     "test": "node tests/tests.js | tap-spec",
     "coverage": "istanbul cover tests/tests.js"
   },
