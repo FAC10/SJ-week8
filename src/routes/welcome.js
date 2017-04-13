@@ -6,8 +6,10 @@ module.exports = {
   method: 'GET',
   path: '/welcome',
   config: {
-    auth: false
-  },
+    auth: {
+      mode: 'try'
+  }
+},
   handler: (req, reply) => {
     const { code } = req.query;
     const url = 'https://github.com/login/oauth/access_token?';

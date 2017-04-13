@@ -42,9 +42,9 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
     path: '/',
     config: {
       auth: {
-        mode: 'optional'
-      },
-    },
+        mode: 'try'
+    }
+  },
     handler: (request, reply) => {
       data.getBlogPosts((dbErr, res) => {
         if (dbErr) {
@@ -69,6 +69,11 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route({
     method: 'POST',
     path: '/logged-in',
+    config: {
+      auth: {
+        mode: 'try'
+    }
+  },
     handler: (req, reply) => {
 
       const { username, password } = req.payload;
@@ -116,6 +121,11 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
   server.route({
     method: 'POST',
     path: '/logged-out',
+    config: {
+      auth: {
+        mode: 'try'
+    }
+  },
     handler: (request, reply) => {
       request.cookieAuth.clear();
       reply.redirect('/');
@@ -180,13 +190,16 @@ server.register([inert, credentials, vision, CookieAuth, jwt2], (err) => {
 const options = {
   password: 'datagangrulesokdatagangrulesokdatagangrulesok',
   cookie: 'pajescookie',
+  redirectTo: '/',
+  redirectOnTry: false,
+  isSameSite: false,
   isSecure: false,
   ttl: 3 * 60 * 10000,
 };
 
-server.auth.strategy('base', 'cookie', options);
+server.auth.strategy('base', 'cookie', 'required', options);
 
-server.auth.default('base');
+// server.auth.default('base');
 
 
 // Start server
